@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Query, Path 
 from typing import List, Optional
-from database import container
-from models import Evento, Participante
+from database import users_container, projects_container
+from models import usuario, proyecto
 from azure.cosmos import exceptions
 from datetime import datetime
 
