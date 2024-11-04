@@ -22,10 +22,10 @@ def list_usuario():
 
 # crear usuario
 @app.post("/usuarios/", response_model=usuario, status_code=201)
-def create_usuario(event: usuario):
+def create_usuario(usuario: usuario):
     try:
-        container.create_item(body=event.dict())
-        return event
+        container.create_item(body=usuario.dict())
+        return usuario
     except exceptions.CosmosResourceExistsError:
         raise HTTPException(status_code=400, detail= "El usuario con este id ya existe!!")
     except exceptions.CosmosHTTPResponseError as e:
@@ -35,16 +35,16 @@ def create_usuario(event: usuario):
 @app.put("/usuarios/{usuario_id}", response_model=usuario)
 def update_usuario(usuario_id:str, updated_usuario: usuario):
     # buscar el item (retorna un tipo diccionario):
-    existing_usuario = container.read_item(item=usuario_id, partition_key=usuario_id)
-    existing_usuario.update(updated_event.dict(exclude_unset=True)) # recupera solo los campos que han sido proporcionados
-    container.replace_item(item = usuario_id, body=existing_usuario)
+    existing_usuario = users_container.read_item(item=usuario_id, partition_key=usuario_id)
+    existing_usuario.update(updated_usuario.dict(exclude_unset=True)) # recupera solo los campos que han sido proporcionados
+    users_container.replace_item(item = usuario_id, body=existing_usuario)
     return existing_usuario
 
 #eliminar usuario
 @app.delete("/usuarios/{usuario_id}", status_code=204)
 def delete_usuario(usuario_id:str):
     try:
-        container.delete_item(item=usuario_id, partition_key=usuario_id)
+        users_container.delete_item(item=usuario_id, partition_key=usuario_id)
         return
     except exceptions.CosmosResourceNotFoundError:
         raise HTTPException(status_code=404, detail="Usuario a eliminar no encontrado.")
@@ -63,10 +63,10 @@ def list_proyecto():
 
 # crear proyecto
 @app.post("/proyectos/", response_model=proyecto, status_code=201)
-def create_proyecto(event: proyecto):
+def create_proyecto(proyecto: proyecto):
     try:
-        container.create_item(body=event.dict())
-        return event
+        projects_container.create_item(body=proyecto.dict())
+        return proyecto
     except exceptions.CosmosResourceExistsError:
         raise HTTPException(status_code=400, detail= "El proyecto con este id ya existe!!")
     except exceptions.CosmosHTTPResponseError as e:
@@ -76,16 +76,16 @@ def create_proyecto(event: proyecto):
 @app.put("/proyectos/{proyecto_id}", response_model=proyecto)
 def update_proyecto(proyecto_id:str, updated_proyecto: proyecto):
     # buscar el item (retorna un tipo diccionario):
-    existing_proyecto = container.read_item(item=proyecto_id, partition_key=proyecto_id)
-    existing_proyecto.update(updated_event.dict(exclude_unset=True)) # recupera solo los campos que han sido proporcionados
-    container.replace_item(item = proyecto_id, body=existing_proyecto)
+    existing_proyecto = projects_container.read_item(item=proyecto_id, partition_key=proyecto_id)
+    existing_proyecto.update(updated_proyecto.dict(exclude_unset=True)) # recupera solo los campos que han sido proporcionados
+    projects_container.replace_item(item = proyecto_id, body=existing_proyecto)
     return existing_proyecto
 
 #eliminar proyecto
 @app.delete("/proyectos/{proyecto_id}", status_code=204)
 def delete_proyecto(proyecto_id:str):
     try:
-        container.delete_item(item=proyecto_id, partition_key=proyecto_id)
+        projects_container.delete_item(item=proyecto_id, partition_key=proyecto_id)
         return
     except exceptions.CosmosResourceNotFoundError:
         raise HTTPException(status_code=404, detail="Proyecto a eliminar no encontrado.")
